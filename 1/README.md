@@ -1,0 +1,1 @@
+Compile with macro NOT_RANDOM in order to create binary not using /dev/random
