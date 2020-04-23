@@ -30,8 +30,6 @@ int main(int argc, char **argv)
   MPI_Comm_rank(one_dimensional_topology, &rank);
   MPI_Cart_coords(one_dimensional_topology, rank, 1, &my_cordinates);
 
-  int source, dest;
-  MPI_Cart_shift(one_dimensional_topology, 0, DISPLACEMENT,&source, &dest);
 
   unsigned int my_number;
   getrandom(&my_number, sizeof(my_number), GRND_RANDOM);
@@ -44,6 +42,7 @@ int main(int argc, char **argv)
 
   printf("I am %d and my number is %d\n", rank, my_number); 
   const int number_of_sends = log2(size_of_dimension);
+  int source, dest;
   for(int i = 0; i < number_of_sends ; i++){
     MPI_Cart_shift(one_dimensional_topology, 0, 1 << i ,&source, &dest);
     #ifdef DEBUG
