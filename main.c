@@ -42,6 +42,7 @@ int main(int argc, char **argv)
   printf("I am %d and my number is %d\n", rank, my_number); 
   const int number_of_sends = log2(size_of_dimension);
   for(int i = 0; i < number_of_sends ; i++){
+    MPI_Cart_shift(one_dimensional_topology, 0, 1 << i ,&source, &dest);
     MPI_Sendrecv(&outgoing, 1, MPI_INT, dest, TAG, &incoming, 1, MPI_INT, source, TAG, one_dimensional_topology, MPI_STATUS_IGNORE);
     // printf("I am %d, received %d, send %d\n", rank, incoming, outgoing);
     outgoing = gcd(incoming, outgoing); 
