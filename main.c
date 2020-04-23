@@ -36,6 +36,9 @@ int main(int argc, char **argv)
   unsigned int my_number;
   getrandom(&my_number, sizeof(my_number), GRND_RANDOM);
   my_number >>= 16;
+  #ifdef NOT_RANDOM 
+  my_number = (rank*rank*rank + 1) * 4 + 100;
+  #endif
   int outgoing = my_number;
   int incoming;
 
@@ -43,12 +46,20 @@ int main(int argc, char **argv)
   const int number_of_sends = log2(size_of_dimension);
   for(int i = 0; i < number_of_sends ; i++){
     MPI_Cart_shift(one_dimensional_topology, 0, 1 << i ,&source, &dest);
+    #ifdef DEBUG
+      printf("Send phase number %d, I am %d, shift is %d\n", i ,rank, 1 << i);
+    #endif
     MPI_Sendrecv(&outgoing, 1, MPI_INT, dest, TAG, &incoming, 1, MPI_INT, source, TAG, one_dimensional_topology, MPI_STATUS_IGNORE);
-    // printf("I am %d, received %d, send %d\n", rank, incoming, outgoing);
+    #ifdef DEBUG
+      printf("Send phase number %d, I am %d, received %d, send %d\n", i ,rank, incoming, outgoing);
+    #endif
     outgoing = gcd(incoming, outgoing); 
+    #ifdef DEBUG
+      printf("Send phase number %d, I am %d, my gcd is %d\n", i, rank, outgoing);
+    #endif
   }
   if(rank == 0){
-    printf("GCD of al numbers is %d\n", outgoing);
+    printf("GCD of all numbers is %d\n", outgoing);
   }
 
   MPI_Finalize();
